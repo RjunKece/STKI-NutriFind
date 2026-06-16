@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DatasetRegistry;
 use App\Models\Food;
 use App\Services\SearchService;
 use Illuminate\Http\Request;
@@ -24,7 +25,10 @@ class SearchController extends Controller
         $categories = Food::select('category')->distinct()->pluck('category');
         $totalFoods = Food::count();
 
-        return view('search.index', compact('stats', 'categories', 'totalFoods'));
+        // Dataset Registry — statistik nyata dari database
+        $datasetRegistries = DatasetRegistry::active()->get();
+
+        return view('search.index', compact('stats', 'categories', 'totalFoods', 'datasetRegistries'));
     }
 
     /**

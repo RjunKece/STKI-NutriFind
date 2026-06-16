@@ -104,6 +104,32 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             {{-- Footer Grid --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                {{-- Data Sources (from database) --}}
+                <div>
+                    <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Data Sources</h4>
+                    @if(isset($activeDatasets) && $activeDatasets->isNotEmpty())
+                    <ul class="space-y-2.5">
+                        @foreach($activeDatasets as $ds)
+                        <li class="flex items-start gap-2">
+                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></span>
+                            <div>
+                                <span class="text-sm font-medium text-gray-700">{{ $ds->name }}</span>
+                                <p class="text-xs text-gray-400 mt-0.5">{{ $ds->total_documents }} documents · {{ $ds->provider }}</p>
+                            </div>
+                        </li>
+                        @endforeach
+                    </ul>
+                    <div class="mt-3">
+                        <a href="{{ route('food.index') }}" class="text-xs font-medium text-green-600 hover:text-green-700 transition-colors inline-flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+                            View Dataset
+                        </a>
+                    </div>
+                    @else
+                    <p class="text-xs text-gray-400">No active datasets.</p>
+                    @endif
+                </div>
+
                 {{-- Powered By --}}
                 <div>
                     <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Powered By</h4>
@@ -115,21 +141,6 @@
                                 <span class="text-sm font-medium text-gray-700">{{ $tech['name'] }}</span>
                                 <p class="text-xs text-gray-400 mt-0.5">{{ $tech['description'] }}</p>
                             </div>
-                        </li>
-                        @endforeach
-                    </ul>
-                </div>
-
-                {{-- References --}}
-                <div>
-                    <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">References</h4>
-                    <ul class="space-y-2.5">
-                        @foreach(collect(config('sources.sources'))->where('url', '!=', null)->take(5) as $src)
-                        <li>
-                            <a href="{{ $src['url'] }}" target="_blank" rel="noopener noreferrer" class="text-sm text-gray-600 hover:text-green-700 transition-colors flex items-center gap-1.5 group">
-                                <svg class="w-3 h-3 text-gray-400 group-hover:text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                                {{ Str::limit($src['name'], 45) }}
-                            </a>
                         </li>
                         @endforeach
                     </ul>
@@ -148,8 +159,12 @@
                             <p class="text-sm text-gray-600">TF-IDF + Cosine Similarity</p>
                         </div>
                         <div>
-                            <span class="text-xs text-gray-400">Last Updated</span>
+                            <span class="text-xs text-gray-400">Last Indexed</span>
+                            @if(isset($activeDatasets) && $activeDatasets->isNotEmpty())
+                            <p class="text-sm text-gray-600">{{ $activeDatasets->max('last_indexed_at')?->translatedFormat('d F Y, H:i') ?? '-' }} WIB</p>
+                            @else
                             <p class="text-sm text-gray-600">{{ now()->translatedFormat('d F Y, H:i') }} WIB</p>
+                            @endif
                         </div>
                     </div>
                 </div>

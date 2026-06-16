@@ -349,51 +349,136 @@
             </div>
 
             {{-- ========================= --}}
-            {{-- Data Sources & References --}}
+            {{-- Dataset Statistics --}}
+            {{-- ========================= --}}
+            @if($datasetRegistries->isNotEmpty())
+            @php
+                $totalDocs = $datasetRegistries->sum('total_documents');
+                $totalCategories = $datasetRegistries->sum(fn($d) => is_array($d->categories) ? count($d->categories) : 0);
+                $totalVocab = $datasetRegistries->sum('vocabulary_size');
+                $totalIndexed = $datasetRegistries->sum('indexed_documents');
+                $lastIndexed = $datasetRegistries->max('last_indexed_at');
+            @endphp
+            <div class="mb-20">
+                <div class="text-center mb-12">
+                    <p class="text-sm font-semibold text-green-600 tracking-wider uppercase mb-3">Statistik</p>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Dataset Statistics</h2>
+                    <p class="mt-3 text-sm text-gray-500 max-w-xl mx-auto">Statistik nyata dari dataset yang digunakan oleh sistem pencarian, dihitung langsung dari database.</p>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md hover:border-green-200/50 transition-all duration-300 text-center">
+                        <div class="text-3xl font-extrabold text-gray-900">{{ number_format($totalDocs, 0, ',', '.') }}</div>
+                        <div class="text-xs text-gray-500 mt-2 font-medium">Total Documents</div>
+                    </div>
+                    <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md hover:border-green-200/50 transition-all duration-300 text-center">
+                        <div class="text-3xl font-extrabold text-gray-900">{{ $totalCategories }}</div>
+                        <div class="text-xs text-gray-500 mt-2 font-medium">Categories</div>
+                    </div>
+                    <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md hover:border-green-200/50 transition-all duration-300 text-center">
+                        <div class="text-3xl font-extrabold text-gray-900">{{ number_format($totalVocab, 0, ',', '.') }}</div>
+                        <div class="text-xs text-gray-500 mt-2 font-medium">Vocabulary Size</div>
+                    </div>
+                    <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md hover:border-green-200/50 transition-all duration-300 text-center">
+                        <div class="text-3xl font-extrabold text-gray-900">{{ number_format($totalIndexed, 0, ',', '.') }}</div>
+                        <div class="text-xs text-gray-500 mt-2 font-medium">Indexed Documents</div>
+                    </div>
+                    <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md hover:border-green-200/50 transition-all duration-300 text-center col-span-2 md:col-span-1">
+                        <div class="text-lg font-extrabold text-gray-900">{{ $lastIndexed ? $lastIndexed->format('Y-m-d') : '-' }}</div>
+                        <div class="text-xs text-gray-500 mt-2 font-medium">Last Indexed</div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ========================= --}}
+            {{-- Active Datasets --}}
             {{-- ========================= --}}
             <div>
                 <div class="text-center mb-12">
-                    <p class="text-sm font-semibold text-green-600 tracking-wider uppercase mb-3">Kredibilitas</p>
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Sumber Data & Referensi</h2>
-                    <p class="mt-3 text-sm text-gray-500 max-w-xl mx-auto">Seluruh informasi dan metodologi yang digunakan dalam sistem ini berasal dari sumber yang terpercaya dan terverifikasi.</p>
+                    <p class="text-sm font-semibold text-green-600 tracking-wider uppercase mb-3">Registry</p>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Active Datasets</h2>
+                    <p class="mt-3 text-sm text-gray-500 max-w-xl mx-auto">Seluruh dataset yang sedang aktif digunakan oleh mesin pencari. Metadata diambil langsung dari database.</p>
                 </div>
 
-                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    @foreach(config('sources.sources') as $source)
-                    <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md hover:border-green-200/50 transition-all duration-300 group flex flex-col">
-                        <div class="flex items-start justify-between gap-3 mb-3">
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-sm font-bold text-gray-800 group-hover:text-green-700 transition-colors leading-snug">{{ $source['name'] }}</h4>
+                <div class="space-y-6">
+                    @foreach($datasetRegistries as $dataset)
+                    <div class="bg-white/70 backdrop-blur-sm rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-green-200/50 transition-all duration-300 overflow-hidden">
+                        {{-- Dataset Header --}}
+                        <div class="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-lg font-bold text-white">{{ $dataset->name }}</h3>
+                                    <p class="text-sm text-green-100 mt-0.5">Provider: {{ $dataset->provider }}{{ $dataset->version ? ' · v'.$dataset->version : '' }}</p>
+                                </div>
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold {{ $dataset->status === 'active' ? 'bg-white/20 text-white' : 'bg-red-100 text-red-700' }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $dataset->status === 'active' ? 'bg-green-300' : 'bg-red-400' }}"></span>
+                                    {{ $dataset->status === 'active' ? 'Active' : 'Inactive' }}
+                                </span>
                             </div>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium flex-shrink-0
-                                {{ $source['category'] === 'dataset' ? 'bg-blue-50 text-blue-700 border border-blue-100' : '' }}
-                                {{ $source['category'] === 'library' ? 'bg-purple-50 text-purple-700 border border-purple-100' : '' }}
-                                {{ $source['category'] === 'research' ? 'bg-amber-50 text-amber-700 border border-amber-100' : '' }}
-                                {{ $source['category'] === 'reference' ? 'bg-gray-50 text-gray-600 border border-gray-200' : '' }}
-                                {{ $source['category'] === 'tool' ? 'bg-teal-50 text-teal-700 border border-teal-100' : '' }}
-                            ">
-                                {{ config('sources.category_labels')[$source['category']] ?? $source['category'] }}
-                            </span>
                         </div>
-                        <p class="text-xs text-gray-500 leading-relaxed flex-1 mb-3">{{ $source['description'] }}</p>
-                        <div class="flex items-center justify-between pt-3 border-t border-gray-50 text-xs">
-                            <div class="flex items-center gap-2">
-                                <span class="w-1.5 h-1.5 rounded-full {{ $source['status'] === 'active' ? 'bg-green-500' : 'bg-gray-300' }}"></span>
-                                <span class="text-gray-400">{{ $source['status'] === 'active' ? 'Aktif' : 'Tidak Aktif' }}</span>
+
+                        {{-- Dataset Body --}}
+                        <div class="p-6">
+                            <p class="text-sm text-gray-600 leading-relaxed mb-5">{{ $dataset->description }}</p>
+
+                            {{-- Stats Grid --}}
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
+                                <div class="bg-gray-50 rounded-xl p-3 text-center">
+                                    <div class="text-lg font-bold text-gray-900">{{ $dataset->formatted_total_documents }}</div>
+                                    <div class="text-xs text-gray-500 mt-0.5">Documents</div>
+                                </div>
+                                <div class="bg-gray-50 rounded-xl p-3 text-center">
+                                    <div class="text-lg font-bold text-gray-900">{{ $dataset->category_count }}</div>
+                                    <div class="text-xs text-gray-500 mt-0.5">Categories</div>
+                                </div>
+                                <div class="bg-gray-50 rounded-xl p-3 text-center">
+                                    <div class="text-lg font-bold text-gray-900">{{ $dataset->formatted_vocabulary_size }}</div>
+                                    <div class="text-xs text-gray-500 mt-0.5">Vocabulary</div>
+                                </div>
+                                <div class="bg-gray-50 rounded-xl p-3 text-center">
+                                    <div class="text-lg font-bold text-gray-900">{{ $dataset->last_indexed_at ? $dataset->last_indexed_at->format('d M Y') : '-' }}</div>
+                                    <div class="text-xs text-gray-500 mt-0.5">Last Indexed</div>
+                                </div>
                             </div>
-                            @if($source['url'])
-                            <a href="{{ $source['url'] }}" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-700 font-medium flex items-center gap-1 transition-colors">
-                                Sumber
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                            </a>
-                            @else
-                            <span class="text-gray-400">Data Internal</span>
+
+                            {{-- Categories --}}
+                            @if(is_array($dataset->categories) && count($dataset->categories) > 0)
+                            <div class="mb-4">
+                                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Categories</div>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach($dataset->categories as $cat)
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-green-50 text-green-700 border border-green-100">
+                                        {{ ucfirst($cat) }}
+                                    </span>
+                                    @endforeach
+                                </div>
+                            </div>
                             @endif
+
+                            {{-- Footer Actions --}}
+                            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                                <div class="text-xs text-gray-400">
+                                    Indexed: {{ $dataset->indexed_documents }}/{{ $dataset->total_documents }} documents
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    @if($dataset->source_url)
+                                    <a href="{{ $dataset->source_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-medium text-green-600 hover:text-green-700 transition-colors">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                        View Source
+                                    </a>
+                                    @endif
+                                    <a href="{{ route('food.index') }}" class="inline-flex items-center gap-1.5 text-xs font-medium text-green-600 hover:text-green-700 transition-colors">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+                                        View Dataset
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     @endforeach
                 </div>
             </div>
+            @endif
 
         </div>
     </div>
