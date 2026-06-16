@@ -7,7 +7,7 @@
     {{-- Header --}}
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">📋 Dataset Makanan Bergizi</h1>
+            <h1 class="text-2xl font-bold text-gray-900">Dataset Makanan Bergizi</h1>
             <p class="text-sm text-gray-500 mt-1">Total <span class="font-semibold text-gray-700">{{ $totalFoods }}</span> dokumen makanan dalam database</p>
         </div>
 
@@ -36,14 +36,6 @@
             <div class="p-4 flex flex-col flex-1">
                 {{-- Category Badge --}}
                 <span class="inline-flex items-center self-start px-2.5 py-1 rounded-lg text-xs font-medium bg-green-50 text-green-700 border border-green-100 mb-2">
-                    @switch($food->category)
-                        @case('tinggi protein') 💪 @break
-                        @case('rendah gula') 🍃 @break
-                        @case('murah bergizi') 💰 @break
-                        @case('vegetarian') 🥬 @break
-                        @case('anak sekolah') 🎒 @break
-                        @case('tinggi serat') 🌾 @break
-                    @endswitch
                     {{ ucfirst($food->category) }}
                 </span>
 

@@ -20,14 +20,6 @@
             <div class="flex items-start justify-between">
                 <div>
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white/20 text-white backdrop-blur-sm mb-3">
-                        @switch($food->category)
-                            @case('tinggi protein') 💪 @break
-                            @case('rendah gula') 🍃 @break
-                            @case('murah bergizi') 💰 @break
-                            @case('vegetarian') 🥬 @break
-                            @case('anak sekolah') 🎒 @break
-                            @case('tinggi serat') 🌾 @break
-                        @endswitch
                         {{ ucfirst($food->category) }}
                     </span>
                     <h1 class="text-2xl sm:text-3xl font-bold text-white">{{ $food->title }}</h1>
@@ -110,7 +102,7 @@
             Kembali
         </a>
         <a href="{{ route('food.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-gray-50 transition-all shadow-sm">
-            📋 Lihat Semua Dataset
+            Lihat Semua Dataset
         </a>
     </div>
 </div>

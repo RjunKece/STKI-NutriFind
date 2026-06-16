@@ -96,11 +96,11 @@
                         <td class="px-6 py-4">
                             @if($er['result']->is_relevant)
                             <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-green-50 text-green-700 border border-green-100">
-                                ✅ Ya
+                                Ya
                             </span>
                             @else
                             <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-red-50 text-red-600 border border-red-100">
-                                ❌ Tidak
+                                Tidak
                             </span>
                             @endif
                         </td>

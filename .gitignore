@@ -25,3 +25,22 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# PDF and document files (sensitive/not for public)
+*.pdf
+
+# Environment and secrets
+.env.*
+!.env.example
+
+# IDE and editor configs
+/.gemini
+.cursor/
+
+# Storage data
+/storage/app/private/
+/storage/app/public/
+
+# OS files
+*.DS_Store
+Desktop.ini
