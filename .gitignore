@@ -44,3 +44,18 @@ Thumbs.db
 # OS files
 *.DS_Store
 Desktop.ini
+
+# Temporary additions for pushing
+*.doc
+*.docx
+*.ppt
+*.pptx
+*.zip
+*.rar
+*.tmp
+composer.phar
+backup/
+backups/
+*.sql
+*.txt
+
